@@ -38,6 +38,7 @@ values."
      html
      javascript
      extra-langs
+     rust
 
      osx
      (shell :variables
@@ -58,6 +59,7 @@ values."
      eyebrowse
      syntax-checking
      version-control
+     gtags
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -325,6 +327,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq whitespace-space-regexp "\\(\u3000+\\)")
   (setq evil-cross-lines t)
   (setq-default truncate-lines t)
+  (setq-default rust-enable-racer t)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
