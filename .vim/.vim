@@ -1,1 +1,1 @@
-/Users/KeigoOgawa/dotfiles/.vim
+/home/ogawa/dotfiles/.vim
