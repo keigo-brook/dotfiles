@@ -26,7 +26,7 @@ values."
      python
      (ruby :variables
            ruby-enable-ruby-on-rails-support t
-           ruby-enable-enf-ruby-mode t
+           ruby-enable-enh-ruby-mode t
            ruby-version-manager 'rbenv
            ruby-test-runner 'rspec
            )
@@ -331,4 +331,4 @@ before packages are loaded. If you are unsure, you should try in setting them in
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.f
+;; auto-generate custom variable definitions.
