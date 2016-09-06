@@ -1,1 +1,0 @@
-/home/ogawa/dotfiles/.vim
