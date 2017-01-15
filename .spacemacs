@@ -20,7 +20,7 @@ values."
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
    ;; (default 'unused)
-   dotspacemacs-enable-lazy-installation 'unused
+   dotspacemacs-enable-lazy-installation nil
    ;; If non-nil then Spacemacs will ask for confirmation before installing
    ;; a layer lazily. (default t)
    dotspacemacs-ask-for-lazy-installation t
@@ -31,6 +31,7 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     latex
      semantic
      yaml
      sql
@@ -49,7 +50,6 @@ values."
      ruby-on-rails
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode
-            c-c++-enable-clang-support t
             )
      html
      javascript
@@ -62,6 +62,7 @@ values."
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip t
                       auto-completion-enable-sort-by-usage t
+                      auto-completion-complete-with-key-sequence-delay 0
                       )
      better-defaults
      emacs-lisp
@@ -81,7 +82,12 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(vagrant-tramp)
+   dotspacemacs-additional-packages
+   '(
+     vagrant-tramp
+     all-the-icons
+     all-the-icons-dired
+     )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -117,7 +123,7 @@ values."
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
-   dotspacemacs-check-for-update t
+   dotspacemacs-check-for-update nil
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
    ;; to `emacs-version'.
@@ -257,11 +263,11 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 90
+   dotspacemacs-active-transparency 100
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 90
+   dotspacemacs-inactive-transparency 100
    ;; If non nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
    ;; If non nil show the color guide hint for transient state keys. (default t)
@@ -326,12 +332,15 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (setq default-input-method "MacOSX")
+  (setq-default evil-escape-key-sequence "fj")
   (setq linum-format "%4d ")
   (global-set-key [f6] 'linum-mode)
   (global-set-key [s-up] 'beginning-of-buffer)
   (global-set-key [s-down] 'end-of-buffer)
   (global-set-key [C-s-left] 'previous-buffer)
   (global-set-key [C-s-right] 'next-buffer)
+
 
   ;; trackpad scrolling
   (defun scroll-down-with-lines()
@@ -373,7 +382,19 @@ you should place your code here."
   (setq kept-old-versions   0)  ;; 最古の保持数
   (setq delete-old-versions t)  ;; 範囲外を削除
   (setq vc-make-backup-files t) ; バージョン管理下のファイルもバックアップを作る。
+  (setq inhibit-startup-screen t)
+  (setq inhibit-startup-message t)
+  (setq initial-buffer-choice t)
+
+  (global-hungry-delete-mode 1)
+  (setq neo-theme 'icons)
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+  ;;; 画面右端で折り返さない
+  (setq-default truncate-lines t)
+  (setq truncate-partial-width-windows t)
+  (spaceline-toggle-buffer-size-off)
   )
+
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 (custom-set-variables
@@ -381,6 +402,7 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-minimum-prefix-length 1)
  '(evil-want-Y-yank-to-eol nil)
  '(org-capture-templates
    (quote
@@ -388,10 +410,14 @@ you should place your code here."
       (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/notes.org")
       "")
      ("k" "thought" entry
-      (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/thought.org")))))
+      (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/thought.org"))
+     ("l" "labo-memo" entry
+      (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/labomemo.org")
+      "** %T
+%?"))))
  '(package-selected-packages
    (quote
-    (stickyfunc-enhance srefactor powerline spinner hydra request pcre2el seq rust-mode go-guru iedit highlight flycheck-gometalinter go-eldoc company-go go-mode minitest hide-comnt anzu undo-tree dash yaml-mode inflections sql-indent phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode pug-mode smartparens helm helm-core projectile async rake org alert log4e gntp markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck magit magit-popup git-commit with-editor web-completion-data dash-functional tern pos-tip company inf-ruby yasnippet anaconda-mode pythonic auto-complete define-word yapfify xterm-color ws-butler wolfram-mode window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package toml-mode toc-org thrift tagedit stan-mode spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv rainbow-delimiters racer quelpa qml-mode pyvenv pytest pyenv-mode py-isort projectile-rails popwin pip-requirements persp-mode pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file neotree mwim multi-term move-text monokai-theme mmm-mode matlab-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags flyspell-correct-helm flycheck-rust flycheck-pos-tip flx-ido fill-column-indicator feature-mode fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav dumb-jump disaster diff-hl dash-at-point cython-mode company-web company-tern company-statistics company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format chruby cargo bundler auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (auctex all-the-icons-dired all-the-icons font-lock+ bind-map stickyfunc-enhance srefactor powerline spinner hydra request pcre2el seq rust-mode go-guru iedit highlight flycheck-gometalinter go-eldoc company-go go-mode minitest hide-comnt anzu undo-tree dash yaml-mode inflections sql-indent phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode pug-mode smartparens helm helm-core projectile async rake org alert log4e gntp markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck magit magit-popup git-commit with-editor web-completion-data dash-functional tern pos-tip company inf-ruby yasnippet anaconda-mode pythonic auto-complete define-word yapfify xterm-color ws-butler wolfram-mode window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package toml-mode toc-org thrift tagedit stan-mode spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv rainbow-delimiters racer quelpa qml-mode pyvenv pytest pyenv-mode py-isort projectile-rails popwin pip-requirements persp-mode pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file neotree mwim multi-term move-text monokai-theme mmm-mode matlab-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags flyspell-correct-helm flycheck-rust flycheck-pos-tip flx-ido fill-column-indicator feature-mode fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav dumb-jump disaster diff-hl dash-at-point cython-mode company-web company-tern company-statistics company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format chruby cargo bundler auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
