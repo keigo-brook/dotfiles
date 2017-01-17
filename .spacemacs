@@ -87,11 +87,12 @@ values."
      vagrant-tramp
      all-the-icons
      all-the-icons-dired
+     autopair
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(smartparens)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -332,6 +333,11 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (setq evil-want-fine-undo t)
+  (setq evil-cross-lines t)
+  (autopair-global-mode t)
+  (setq autopair-blink nil)
+
   (setq default-input-method "MacOSX")
   (setq-default evil-escape-key-sequence "fj")
   (setq linum-format "%4d ")
@@ -340,7 +346,6 @@ you should place your code here."
   (global-set-key [s-down] 'end-of-buffer)
   (global-set-key [C-s-left] 'previous-buffer)
   (global-set-key [C-s-right] 'next-buffer)
-
 
   ;; trackpad scrolling
   (defun scroll-down-with-lines()
@@ -361,10 +366,9 @@ you should place your code here."
 
   ;; show zenkaku space
   (setq whitespace-space-regexp "\\(\u3000+\\)")
-  (setq evil-cross-lines t)
   ;; org & junk
-  (setq open-junk-file-format "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/%Y-%m%d-%H%M%S.")
-  (setq org-directory "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo")
+  (setq open-junk-file-format "~/Documents/emacsmemo/%Y-%m%d-%H%M%S.")
+  (setq org-directory "~/Documents/emacsmemo")
   (setq org-agenda-files (list org-directory))
   (setq create-lockfiles nil)
   ;; japanese font
@@ -393,6 +397,7 @@ you should place your code here."
   (setq-default truncate-lines t)
   (setq truncate-partial-width-windows t)
   (spaceline-toggle-buffer-size-off)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -407,17 +412,17 @@ you should place your code here."
  '(org-capture-templates
    (quote
     (("t" "notes" entry
-      (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/notes.org")
+      (file "~/Documents/emacsmemo/notes.org")
       "")
      ("k" "thought" entry
-      (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/thought.org"))
+      (file "~/Documents/emacsmemo/thought.org"))
      ("l" "labo-memo" entry
-      (file "~/Documents/Documents - KeigoOgawa’s MacBook Pro/emacsmemo/labomemo.org")
+      (file "~/Documents/emacsmemo/labomemo.org")
       "** %T
 %?"))))
  '(package-selected-packages
    (quote
-    (auctex all-the-icons-dired all-the-icons font-lock+ bind-map stickyfunc-enhance srefactor powerline spinner hydra request pcre2el seq rust-mode go-guru iedit highlight flycheck-gometalinter go-eldoc company-go go-mode minitest hide-comnt anzu undo-tree dash yaml-mode inflections sql-indent phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode pug-mode smartparens helm helm-core projectile async rake org alert log4e gntp markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck magit magit-popup git-commit with-editor web-completion-data dash-functional tern pos-tip company inf-ruby yasnippet anaconda-mode pythonic auto-complete define-word yapfify xterm-color ws-butler wolfram-mode window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package toml-mode toc-org thrift tagedit stan-mode spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv rainbow-delimiters racer quelpa qml-mode pyvenv pytest pyenv-mode py-isort projectile-rails popwin pip-requirements persp-mode pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file neotree mwim multi-term move-text monokai-theme mmm-mode matlab-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags flyspell-correct-helm flycheck-rust flycheck-pos-tip flx-ido fill-column-indicator feature-mode fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav dumb-jump disaster diff-hl dash-at-point cython-mode company-web company-tern company-statistics company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format chruby cargo bundler auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (autopair bind-key auctex all-the-icons-dired all-the-icons font-lock+ bind-map stickyfunc-enhance srefactor powerline spinner hydra request pcre2el seq rust-mode go-guru iedit highlight flycheck-gometalinter go-eldoc company-go go-mode minitest hide-comnt anzu undo-tree dash yaml-mode inflections sql-indent phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode pug-mode smartparens helm helm-core projectile async rake org alert log4e gntp markdown-mode skewer-mode simple-httpd json-snatcher json-reformat multiple-cursors js2-mode haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter gh marshal logito pcache ht flyspell-correct flycheck magit magit-popup git-commit with-editor web-completion-data dash-functional tern pos-tip company inf-ruby yasnippet anaconda-mode pythonic auto-complete define-word yapfify xterm-color ws-butler wolfram-mode window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package toml-mode toc-org thrift tagedit stan-mode spacemacs-theme spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv rainbow-delimiters racer quelpa qml-mode pyvenv pytest pyenv-mode py-isort projectile-rails popwin pip-requirements persp-mode pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-plus-contrib org-download org-bullets open-junk-file neotree mwim multi-term move-text monokai-theme mmm-mode matlab-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode launchctl julia-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags flyspell-correct-helm flycheck-rust flycheck-pos-tip flx-ido fill-column-indicator feature-mode fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav dumb-jump disaster diff-hl dash-at-point cython-mode company-web company-tern company-statistics company-quickhelp company-c-headers company-auctex company-anaconda column-enforce-mode coffee-mode cmake-mode clean-aindent-mode clang-format chruby cargo bundler auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile arduino-mode aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
