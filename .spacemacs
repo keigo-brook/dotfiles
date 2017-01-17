@@ -87,12 +87,11 @@ values."
      vagrant-tramp
      all-the-icons
      all-the-icons-dired
-     autopair
      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(smartparens)
+   dotspacemacs-excluded-packages '()
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -335,8 +334,6 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq evil-want-fine-undo t)
   (setq evil-cross-lines t)
-  (autopair-global-mode t)
-  (setq autopair-blink nil)
 
   (setq default-input-method "MacOSX")
   (setq-default evil-escape-key-sequence "fj")
@@ -390,7 +387,6 @@ you should place your code here."
   (setq inhibit-startup-message t)
   (setq initial-buffer-choice t)
 
-  (global-hungry-delete-mode 1)
   (setq neo-theme 'icons)
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
   ;;; 画面右端で折り返さない
@@ -398,6 +394,8 @@ you should place your code here."
   (setq truncate-partial-width-windows t)
   (spaceline-toggle-buffer-size-off)
 
+  (global-hungry-delete-mode t)
+  (defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
