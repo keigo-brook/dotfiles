@@ -396,6 +396,14 @@ you should place your code here."
 
   (global-hungry-delete-mode t)
   (defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
+
+  (setq-default
+   ;; web-mode
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
