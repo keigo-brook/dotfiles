@@ -343,7 +343,7 @@ you should place your code here."
     (spacemacs/toggle-indent-guide-globally-on)
     (spacemacs/toggle-fill-column-indicator-on))
   (add-hook 'prog-mode-hook 'my_defaults_modes_setup)
-  (add-hook ‘text-mode-hook ‘my_default_modes_setup)
+  (add-hook 'text-mode-hook 'my_defaults_modes_setup)
 
   (spaceline-toggle-buffer-size-off)
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
