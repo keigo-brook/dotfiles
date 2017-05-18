@@ -165,3 +165,4 @@ fabric.properties
 
 ### Intellij Patch ###
 .idea/
+*.iml
