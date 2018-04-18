@@ -468,10 +468,22 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (prefer-coding-system 'utf-8)
+
   (when (eq system-type 'darwin)
     ;; config for macOS
     ;; japanese font
     (set-fontset-font t 'japanese-jisx0208 (font-spec :family "ヒラギノ角ゴシック W3"))
+    (if (eq window-system 'x)
+        (progn
+          (defun paste-to-osx (text &optional push)
+            (progn
+              (let ((process-connection-type nil)) ; use pipe
+                (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+                  (process-send-string proc text)
+                  (process-send-eof proc)))))
+
+          (setq interprogram-cut-function 'paste-to-osx)))
     )
 
   (when (eq system-type 'gnu/linux)
@@ -506,13 +518,13 @@ you should place your code here."
 
     )
 
+  ;; evil
   (setq evil-want-fine-undo t)
   (setq evil-cross-lines t)
   (setq-default evil-escape-key-sequence "fj")
+
   (setq create-lockfiles nil)
   (setq neo-theme 'icons)
-
-  (global-company-mode) ; 全バッファで有効にする
 
   ;; text & prog modes setup
   (defun my_defaults_modes_setup()
@@ -542,11 +554,11 @@ you should place your code here."
 
   ;; show zenkaku space
   (setq whitespace-space-regexp "\\(\u3000+\\)")
+
   ;; org & junk
   (setq open-junk-file-format "~/Documents/emacsmemo/%Y-%m%d-%H%M%S.")
   (setq org-directory "~/Documents/emacsmemo")
   (setq org-agenda-files (list org-directory))
-
 
   ;;; 画面右端で折り返さない
   (setq-default truncate-lines t)
@@ -560,16 +572,48 @@ you should place your code here."
    web-mode-code-indent-offset 2
    web-mode-attr-indent-offset 2)
   (setq-default c-basic-offset 4)
+
+  ;; company-mode
+  (global-company-mode) ; 全バッファで有効にする
   (eval-after-load 'company
     '(progn
        (define-key company-active-map (kbd "C-f") nil)))
+  (setq company-idel-delay 0)
+  (setq company-minimum-prefix-length 1)
+  (setq company-selection-wrap-around t)
+  ;; companyの挙動を良い感じにする
+  ;; https://qiita.com/sune2/items/b73037f9e85962f5afb7
+  (defun company--insert-candidate2 (candidate)
+    (when (> (length candidate) 0)
+      (setq candidate (substring-no-properties candidate))
+      (if (eq (company-call-backend 'ignore-case) 'keep-prefix)
+          (insert (company-strip-prefix candidate))
+        (if (equal company-prefix candidate)
+            (company-select-next)
+          (delete-region (- (point) (length company-prefix)) (point))
+          (insert candidate))
+        )))
 
+  (defun company-complete-common2 ()
+    (interactive)
+    (when (company-manual-begin)
+      (if (and (not (cdr company-candidates))
+               (equal company-common (car company-candidates)))
+          (company-complete-selection)
+        (company--insert-candidate2 company-common))))
+
+  (define-key company-active-map [tab] 'company-complete-common2)
+  (define-key company-active-map [backtab] 'company-select-previous)
+
+  ;; c++11を使う
   (add-hook 'c++-mode-hook
             (lambda ()
               (setq flycheck-gcc-language-standard "c++11")
               (setq flycheck-clang-language-standard "c++11")))
+
   ;; 現在ポイントがある関数名をモードラインに表示
   (which-function-mode 1)
+
   ;; ターミナルで起動したときにメニューを表示しない
   (if (eq window-system 'x)
       (menu-bar-mode 1) (menu-bar-mode 0))
@@ -578,3 +622,23 @@ you should place your code here."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (pipenv zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection sql-indent spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocop rspec-mode robe reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme realgud rbenv rake rainbow-delimiters railscasts-theme racer pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pippel pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pbcopy password-generator paradox overseer osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme nameless mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minitest minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme less-css-mode launchctl json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide importmagic impatient-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-c-style golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-theme github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-gometalinter flx-ido flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav editorconfig dumb-jump drupal-mode dracula-theme django-theme disaster diminish diff-hl darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme counsel-projectile company-web company-tern company-statistics company-rtags company-quickhelp company-php company-go company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode clang-format chruby cherry-blossom-theme centered-cursor-mode cargo busybee-theme bundler bubbleberry-theme browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme all-the-icons-dired alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:background nil)))))
+)
