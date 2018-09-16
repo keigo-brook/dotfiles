@@ -39,3 +39,9 @@
 	insteadOf = git://github.com
 [url "git@bitbucket.org:"]
 	insteadOf = https://bitbucket.org/
+[magithub]
+	online = false
+[magithub "status"]
+	includeStatusHeader = false
+	includePullRequestsSection = false
+	includeIssuesSection = false
