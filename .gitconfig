@@ -45,3 +45,5 @@
 	includeStatusHeader = false
 	includePullRequestsSection = false
 	includeIssuesSection = false
+[log]
+	date = iso-local
