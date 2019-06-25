@@ -39,10 +39,29 @@ This function should only modify configuration layer settings."
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     vimscript
-     latex
-     yaml
+     helm
+     auto-completion
+     better-defaults
+     emacs-lisp
+     git
+     github
+     markdown
+     multiple-cursors
+     treemacs
+     org
+     (shell :variables
+            shell-default-height 30
+            shell-default-position 'bottom)
+     spell-checking
+     syntax-checking
+     version-control
+     osx
+     lsp
+     semantic
+
+     ;; languages
      sql
+     yaml
      php
      python
      (ruby :variables
@@ -51,72 +70,42 @@ This function should only modify configuration layer settings."
            )
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode
+            c-c++-backend 'lsp-cquery
             )
-     cscope
      html
      javascript
      (go :variables go-use-gometalinter t)
      (rust :variables
            rust-backend 'racer)
-     react
-     major-modes
-     lsp
+     )
 
-     osx
-     helm
-     (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-enable-sort-by-usage t
-                      auto-completion-complete-with-key-sequence-delay 0
-                      )
-     better-defaults
-     emacs-lisp
-     git
-     github
-     markdown
-     neotree
-     org
-     (shell :variables
-            shell-default-height 30
-            shell-default-shell 'eshell
-            shell-default-position 'bottom
-            )
-     spell-checking
-     syntax-checking
-     version-control
-     gtags
-     themes-megapack
-     docker
-     multiple-cursors
-     treemacs
-     semantic
-     lsp
-   )
-  ;; List of additional packages that will be installed without being
-  ;; wrapped in a layer. If you need some configuration for these
-  ;; packages, then consider creating a layer. You can also put the
-  ;; configuration in `dotspacemacs/user-config'.
-  dotspacemacs-additional-packages '(seti-theme
-                                     github-theme
-                                     vagrant-tramp
-                                     font-lock+
-                                     treemacs-icons-dired
-                                     company-box
-                                     all-the-icons
-                                     )
-  ;; A list of packages that cannot be updated.
-  dotspacemacs-frozen-packages '()
-  ;; A list of packages that will not be installed and loaded.
-  dotspacemacs-excluded-packages '()
-  ;; Defines the behaviour of Spacemacs when installing packages.
-  ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
-  ;; `used-only' installs only explicitly used packages and deletes any unused
-  ;; packages as well as their unused dependencies. `used-but-keep-unused'
-  ;; installs only the used packages but won't delete unused ones. `all'
-  ;; installs *all* packages supported by Spacemacs and never uninstalls them.
-  ;; (default is `used-only')
-  dotspacemacs-install-packages 'used-only))
+   ;; List of additional packages that will be installed without being
+   ;; wrapped in a layer. If you need some configuration for these
+   ;; packages, then consider creating a layer. You can also put the
+   ;; configuration in `dotspacemacs/user-config'.
+   ;; To use a local version of a package, use the `:location' property:
+   ;; '(your-package :location "~/path/to/your-package/")
+   ;; Also include the dependencies as they will not be resolved automatically.
+   dotspacemacs-additional-packages '(
+                                      doom-themes
+                                      all-the-icons
+                                      all-the-icons-dired
+                                      company-box)
+
+   ;; A list of packages that cannot be updated.
+   dotspacemacs-frozen-packages '()
+
+   ;; A list of packages that will not be installed and loaded.
+   dotspacemacs-excluded-packages '()
+
+   ;; Defines the behaviour of Spacemacs when installing packages.
+   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; `used-only' installs only explicitly used packages and deletes any unused
+   ;; packages as well as their unused dependencies. `used-but-keep-unused'
+   ;; installs only the used packages but won't delete unused ones. `all'
+   ;; installs *all* packages supported by Spacemacs and never uninstalls them.
+   ;; (default is `used-only')
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -126,6 +115,25 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+   ;; If non-nil then enable support for the portable dumper. You'll need
+   ;; to compile Emacs 27 from source following the instructions in file
+   ;; EXPERIMENTAL.org at to root of the git repository.
+   ;; (default nil)
+   dotspacemacs-enable-emacs-pdumper nil
+
+   ;; File path pointing to emacs 27.1 executable compiled with support
+   ;; for the portable dumper (this is currently the branch pdumper).
+   ;; (default "emacs-27.0.50")
+   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+
+   ;; Name of the Spacemacs dump file. This is the file will be created by the
+   ;; portable dumper in the cache directory under dumps sub-directory.
+   ;; To load it when starting Emacs add the parameter `--dump-file'
+   ;; when invoking Emacs 27.1 executable on the command line, for instance:
+   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
+   ;; (default spacemacs.pdmp)
+   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
@@ -171,6 +179,7 @@ It should only modify the values of Spacemacs settings."
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
    dotspacemacs-editing-style 'hybrid
+
    ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
 
@@ -188,7 +197,7 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
+   dotspacemacs-startup-lists '((recents . 10)
                                 (projects . 7))
 
    ;; True if the home buffer should respond to resize events. (default t)
@@ -204,11 +213,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(monokai
-                         github
-                         seti
-                         monokai
-                         spacemacs-dark
+   dotspacemacs-themes '(doom-one
                          spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -227,7 +232,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Menlo"
-                               :size 15
+                               :size 12
                                :weight normal
                                :width normal)
 
@@ -261,21 +266,6 @@ It should only modify the values of Spacemacs settings."
    ;; works in the GUI. (default nil)
    dotspacemacs-distinguish-gui-tab nil
 
-   ;; If non-nil `Y' is remapped to `y$' in Evil states. (default nil)
-   dotspacemacs-remap-Y-to-y$ nil
-
-   ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
-   ;; there. (default t)
-   dotspacemacs-retain-visual-state-on-shift t
-
-   ;; If non-nil, `J' and `K' move lines up and down when in visual mode.
-   ;; (default nil)
-   dotspacemacs-visual-line-move-text nil
-
-   ;; If non-nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
-   ;; (default nil)
-   dotspacemacs-ex-substitute-global nil
-
    ;; Name of the default layout (default "Default")
    dotspacemacs-default-layout-name "Default"
 
@@ -305,26 +295,9 @@ It should only modify the values of Spacemacs settings."
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
 
-   ;; If non-nil, `helm' will try to minimize the space it uses. (default nil)
-   dotspacemacs-helm-resize nil
-
-   ;; if non-nil, the helm header is hidden when there is only one source.
-   ;; (default nil)
-   dotspacemacs-helm-no-header nil
-
-   ;; define the position to display `helm', options are `bottom', `top',
-   ;; `left', or `right'. (default 'bottom)
-   dotspacemacs-helm-position 'bottom
-
-   ;; Controls fuzzy matching in helm. If set to `always', force fuzzy matching
-   ;; in all non-asynchronous sources. If set to `source', preserve individual
-   ;; source settings. Else, disable fuzzy matching in all sources.
-   ;; (default 'always)
-   dotspacemacs-helm-use-fuzzy 'always
-
-   ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
-   ;; `p' several times cycles through the elements in the `kill-ring'.
-   ;; (default nil)
+   ;; If non-nil, the paste transient-state is enabled. While enabled, after you
+   ;; paste something, pressing `C-j' and `C-k' several times cycles through the
+   ;; elements in the `kill-ring'. (default nil)
    dotspacemacs-enable-paste-transient-state nil
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
@@ -458,7 +431,7 @@ It should only modify the values of Spacemacs settings."
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
    ;; (default "%I@%S")
-   dotspacemacs-frame-title-format "%I@%S"
+   dotspacemacs-frame-title-format "%a"
 
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
@@ -494,18 +467,39 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  ;;(setq exec-path-from-shell-check-startup-files nil)
+  )
+
+(defun dotspacemacs/user-load ()
+  "Library to load while dumping.
+This function is called only while dumping Spacemacs configuration. You can
+`require' or `load' the libraries of your choice that will be included in the
+dump."
   )
 
 (defun dotspacemacs/user-config ()
-  "Configuration function for user code.
-This function is called at the very end of Spacemacs initialization after
-layers configuration.
-This is the place where most of your configurations should be done. Unless it is
-explicitly specified that a variable should be set before a package is loaded,
-you should place your code here."
-  (prefer-coding-system 'utf-8)
+  "Configuration for user code:
+This function is called at the very end of Spacemacs startup, after layer
+configuration.
+Put your configuration code here, except for variables that should be set
+before packages are loaded."
 
+  ;; general config
+  (prefer-coding-system 'utf-8)
+  (setq create-lockfiles nil)
+  ;; do not show the menu in tty
+  (if (eq window-system 'x)
+      (menu-bar-mode 1) (menu-bar-mode 0))
+  (menu-bar-mode nil)
+
+  (setq syntax-checking-enable-tooltips t)
+  (setq-default require-final-newline t)
+
+  (setq vc-follow-symlinks t)
+  ;; update a buffer when the version-controled linked file is updated
+  (setq auto-revert-check-vc-info t)
+
+
+  ;; os specific config
   (when (eq system-type 'darwin)
     ;; config for macOS
     ;; japanese font
@@ -521,6 +515,16 @@ you should place your code here."
 
           (setq interprogram-cut-function 'paste-to-osx)))
     (setq insert-directory-program "/usr/local/bin/gls" dired-use-ls-dired t)
+    ;; create modern GUI
+    (when (memq window-system '(mac ns))
+      (setq initial-frame-alist
+            (append
+             '((ns-transparent-titlebar . t) ;; transparent title bar
+               (vertical-scroll-bars . nil) ;; remove scroll bar
+               (ns-appearance . dark) ;; 26.1 {light, dark}
+               (internal-border-width . 0))))) ;; remove padding
+    (setq default-frame-alist initial-frame-alist)
+
     )
 
   (when (eq system-type 'gnu/linux)
@@ -563,19 +567,20 @@ you should place your code here."
   (setq evil-cross-lines t)
   (setq-default evil-escape-key-sequence "fj")
 
-  (setq create-lockfiles nil)
-  (setq neo-theme 'icons)
-
   ;; text & prog modes setup
   (defun my_defaults_modes_setup()
     (spacemacs/toggle-indent-guide-globally-on)
     (spacemacs/toggle-fill-column-indicator-on))
   (add-hook 'prog-mode-hook 'my_defaults_modes_setup)
   (add-hook 'text-mode-hook 'my_defaults_modes_setup)
-
-  (spaceline-toggle-buffer-size-off)
   (global-hungry-delete-mode t)
   (defadvice hungry-delete-backward (before sp-delete-pair-advice activate) (save-match-data (sp-delete-pair (ad-get-arg 0))))
+
+  ;; spaceline
+  (spaceline-toggle-buffer-size-off)
+  (spaceline-toggle-minor-modes-off)
+  (which-function-mode 1) ; show function in modeline
+
 
   ;; trackpad scrolling
   (defun scroll-down-with-lines()
@@ -599,7 +604,8 @@ you should place your code here."
   (setq org-directory "~/Documents/emacsmemo")
   (setq org-agenda-files (list org-directory))
 
-  ;;; 画面右端で折り返さない
+  ;; editor config
+  ;; do not truncate long lines
   (setq-default truncate-lines t)
   (setq truncate-partial-width-windows t)
 
@@ -610,17 +616,16 @@ you should place your code here."
    web-mode-css-indent-offset 2
    web-mode-code-indent-offset 2
    web-mode-attr-indent-offset 2)
-  (setq-default c-basic-offset 4)
 
   ;; company-mode
-  (global-company-mode) ; 全バッファで有効にする
+  (global-company-mode)
   (eval-after-load 'company
     '(progn
        (define-key company-active-map (kbd "C-f") nil)))
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
   (setq company-selection-wrap-around t)
-  ;; companyの挙動を良い感じにする
+  ;; tuning company behavior
   ;; https://qiita.com/sune2/items/b73037f9e85962f5afb7
   (defun company--insert-candidate2 (candidate)
     (when (> (length candidate) 0)
@@ -632,7 +637,6 @@ you should place your code here."
           (delete-region (- (point) (length company-prefix)) (point))
           (insert candidate))
         )))
-
   (defun company-complete-common2 ()
     (interactive)
     (when (company-manual-begin)
@@ -644,6 +648,58 @@ you should place your code here."
   (define-key company-active-map [tab] 'company-complete-common2)
   (define-key company-active-map [backtab] 'company-select-previous)
 
+  ;; company-box config
+  (use-package company-box
+      :diminish
+      :hook (company-mode . company-box-mode)
+      :init (setq company-box-icons-alist 'company-box-icons-all-the-icons)
+      :config
+      (setq company-box-backends-colors nil)
+      (setq company-box-show-single-candidate t)
+      (setq company-box-max-candidates 50)
+
+      (defun company-box-icons--elisp (candidate)
+        (when (derived-mode-p 'emacs-lisp-mode)
+          (let ((sym (intern candidate)))
+            (cond ((fboundp sym) 'Function)
+                  ((featurep sym) 'Module)
+                  ((facep sym) 'Color)
+                  ((boundp sym) 'Variable)
+                  ((symbolp sym) 'Text)
+                  (t . nil)))))
+
+      (with-eval-after-load 'all-the-icons
+        (declare-function all-the-icons-faicon 'all-the-icons)
+        (declare-function all-the-icons-material 'all-the-icons)
+        (setq company-box-icons-all-the-icons
+              `((Unknown . ,(all-the-icons-material "find_in_page" :height 0.9 :v-adjust -0.2))
+                (Text . ,(all-the-icons-material "text_fields" :height 0.9 :v-adjust -0.2))
+                (Method . ,(all-the-icons-faicon "cube" :height 0.9 :v-adjust -0.06 :face 'all-the-icons-purple))
+                (Function . ,(all-the-icons-faicon "cube" :height 0.9 :v-adjust -0.06 :face 'all-the-icons-purple))
+                (Constructor . ,(all-the-icons-faicon "cube" :height 0.9 :v-adjust -0.06 :face 'all-the-icons-purple))
+                (Field . ,(all-the-icons-faicon "tag" :height 0.9 :v-adjust -0.06 :face 'all-the-icons-blue))
+                (Variable . ,(all-the-icons-faicon "tag" :height 0.9 :v-adjust -0.06 :face 'all-the-icons-blue))
+                (Class . ,(all-the-icons-material "settings_input_component" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-orange))
+                (Interface . ,(all-the-icons-material "share" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-blue))
+                (Module . ,(all-the-icons-material "view_module" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-blue))
+                (Property . ,(all-the-icons-faicon "wrench" :height 0.9 :v-adjust -0.06))
+                (Unit . ,(all-the-icons-material "settings_system_daydream" :height 0.9 :v-adjust -0.2))
+                (Value . ,(all-the-icons-material "format_align_right" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-blue))
+                (Enum . ,(all-the-icons-material "storage" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-orange))
+                (Keyword . ,(all-the-icons-material "filter_center_focus" :height 0.9 :v-adjust -0.2))
+                (Snippet . ,(all-the-icons-material "format_align_center" :height 0.9 :v-adjust -0.2))
+                (Color . ,(all-the-icons-material "palette" :height 0.9 :v-adjust -0.2))
+                (File . ,(all-the-icons-faicon "file-o" :height 0.9 :v-adjust -0.06))
+                (Reference . ,(all-the-icons-material "collections_bookmark" :height 0.9 :v-adjust -0.2))
+                (Folder . ,(all-the-icons-faicon "folder-open" :height 0.9 :v-adjust -0.06))
+                (EnumMember . ,(all-the-icons-material "format_align_right" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-blueb))
+                (Constant . ,(all-the-icons-faicon "square-o" :height 0.9 :v-adjust -0.06))
+                (Struct . ,(all-the-icons-material "settings_input_component" :height 0.9 :v-adjust -0.2 :face 'all-the-icons-orange))
+                (Event . ,(all-the-icons-faicon "bolt" :height 0.9 :v-adjust -0.06 :face 'all-the-icons-orange))
+                (Operator . ,(all-the-icons-material "control_point" :height 0.9 :v-adjust -0.2))
+                (TypeParameter . ,(all-the-icons-faicon "arrows" :height 0.9 :v-adjust -0.06))
+                (Template . ,(all-the-icons-material "format_align_center" :height 0.9 :v-adjust -0.2))))))
+
   ;; C, C++
   (add-hook 'c++-mode-hook
             (lambda ()
@@ -651,109 +707,15 @@ you should place your code here."
               (setq flycheck-clang-language-standard "c++11")))
   (setq c-default-style "linux"
         c-basic-offset 4)
+  ;; (use-package ccls
+  ;;   :custom (ccls-executable "/usr/local/bin/ccls")
+  ;;   :hook ((c-mode c++-mode objc-mode) .
+	;;          (lambda () (require 'ccls) (lsp))))
 
   ;; TODO highlighting
   (defun highlight-todos ()
     (font-lock-add-keywords nil '(("\\<\\(NOTE\\|TODO\\|HACK\\|BUG\\|FIXME\\):" 1 font-lock-warning-face t))))
   (add-hook 'prog-mode-hook #'highlight-todos)
-
-  ;; 現在ポイントがある関数名をモードラインに表示
-  (which-function-mode 1)
-
-  ;; ターミナルで起動したときにメニューを表示しない
-  (if (eq window-system 'x)
-      (menu-bar-mode 1) (menu-bar-mode 0))
-  (menu-bar-mode nil)
-  ;; remove auto and hungry anything
-  (remove-hook 'c-mode-common-hook 'spacemacs//c-toggle-auto-newline )
-
-  (setq syntax-checking-enable-tooltips t)
-
-  ;; No show in the mode line
-  (spaceline-toggle-minor-modes-off)
-  ;; (spacemacs|diminish ggtags-mode)
-  ;; (spacemacs|diminish which-key-mode)
-  ;; (spacemacs|diminish helm-gtags-mode)
-  ;; (spacemacs|diminish spacemacs-whitespace-cleanup-mode)
-
-  (setq-default require-final-newline t)
-
-  ;; normal-modeになったら強制的に英語入力へ
-  ;; emacs mac portが必要
-  ;; (defun my-evil-normal-state-entry-hook ()
-  ;;   (mac-select-input-source "com.apple.inputmethod.Kotoeri.Roman"))
-  ;; (add-hook 'evil-normal-state-entry-hook 'my-evil-normal-state-entry-hook)
-  ;; (add-hook 'focus-in-hook 'my-evil-normal-state-entry-hook)
-
-  ;; ;; https://github.com/Fuco1/smartparens/issues/783
-  ;; c-mode
-  (add-hook 'c-mode-hook
-            '(lambda()
-               (setq-default sp-escape-quotes-after-insert nil)))
-
-    (add-hook 'company-mode-hook 'company-box-mode)
-  ;; (company-box-backends-colors nil)
-  ;; (company-box-enable-icon (display-graphic-p))
-    (add-hook 'c++-mode-hook #'lsp)
-
-
-
-    ;; シンボリックリンクの読み込みを許可
-    (setq vc-follow-symlinks t)
-    ;; シンボリックリンク先のVCS内で更新が入った場合にバッファを自動更新
-    (setq auto-revert-check-vc-info t)
-
-    ;; Show pretty icons
-    (use-package all-the-icons :defer t)
-  (use-package company-box
-    :diminish
-    :functions (all-the-icons-faicon
-		all-the-icons-material
-		all-the-icons-octicon
-		all-the-icons-alltheicon)
-    :hook (company-mode . company-box-mode)
-    :custom
-    (company-box-backends-colors nil)
-    (company-box-enable-icon (display-graphic-p))
-    :config
-    (with-eval-after-load 'all-the-icons
-      (setq company-box-icons-unknown
-	    (all-the-icons-material "text_fields" :v-adjust -0.2))
-      (setq company-box-icons-elisp
-	    (list
-	     (all-the-icons-faicon "cube" :v-adjust -0.0575 :face 'font-lock-constant-face)                     ; Function
-	     (all-the-icons-faicon "tag" :v-adjust -0.0575 :face 'font-lock-warning-face)                       ; Variable
-	     (all-the-icons-faicon "cubes" :height 0.8 :v-adjust -0.0575 :face 'font-lock-warning-face)         ; Feature
-	     (all-the-icons-material "palette" :v-adjust -0.2)))
-      (setq company-box-icons-yasnippet
-	    (all-the-icons-octicon "code" :v-adjust -0.0575 :face 'font-lock-variable-name-face))               ; Yasnippet
-      (setq company-box-icons-lsp
-	    `(( 1  . ,(all-the-icons-material "text_fields" :v-adjust -0.2))                                    ; Text
-	      ( 2  . ,(all-the-icons-faicon "cube" :v-adjust -0.0575 :face font-lock-constant-face))            ; Method
-	      ( 3  . ,(all-the-icons-faicon "cube" :v-adjust -0.0575 :face font-lock-constant-face))            ; Function
-	      ( 4  . ,(all-the-icons-faicon "cube" :v-adjust -0.0575 :face font-lock-constant-face))            ; Constructor
-	      ( 5  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575 :face 'font-lock-warning-face))             ; Field
-	      ( 6  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575 :face 'font-lock-warning-face))             ; Variable
-	      ( 7  . ,(all-the-icons-faicon "cubes" :height 0.9 :v-adjust -0.0575 :face 'font-lock-constant-face))             ; Class
-	      ( 8  . ,(all-the-icons-faicon "cubes" :height 0.9 :v-adjust -0.0575))            ; Interface
-	      ( 9  . ,(all-the-icons-octicon "package" :v-adjust -0.0575 :face 'font-lock-warning-face))                             ; Module
-	      (10  . ,(all-the-icons-faicon "wrench" :v-adjust -0.0575))                                        ; Property
-	      (11  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575))                                           ; Unit
-	      (12  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575 :face 'font-lock-constant-face))             ; Value
-	      (13  . ,(all-the-icons-faicon "tags" :v-adjust -0.0575 :face 'font-lock-constant-face))           ; Enum
-	      (14  . ,(all-the-icons-material "format_align_center" :v-adjust -0.2))                            ; Keyword
-	      (15  . ,(all-the-icons-octicon "code" :v-adjust -0.0575 :face 'font-lock-variable-name-face))     ; Snippet
-	      (16  . ,(all-the-icons-material "palette" :v-adjust -0.2))                                        ; Color
-	      (17  . ,(all-the-icons-faicon "file-o" :v-adjust -0.0575))                                        ; File
-	      (18  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575))                                           ; Reference
-	      (19  . ,(all-the-icons-octicon "file-directory" :v-adjust -0.0575))                               ; Folder
-	      (20  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575 :face 'font-lock-keyword-face))             ; EnumMember
-	      (21  . ,(all-the-icons-faicon "tag" :v-adjust -0.0575))                                           ; Constant
-	      (22  . ,(all-the-icons-faicon "cubes" :height 0.9 :v-adjust -0.0575 :face 'font-lock-constant-face))            ; Struct
-	      (23  . ,(all-the-icons-faicon "bolt" :v-adjust -0.0575 :face 'font-lock-warning-face))            ; Event
-	      (24  . ,(all-the-icons-octicon "tag" :v-adjust -0.0575))                                          ; Operator
-	      (25  . ,(all-the-icons-octicon "tag" :v-adjust -0.0575 :face 'font-lock-const-face))             ; TypeParameter
-	      ))))
 
 
   )
@@ -770,26 +732,21 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(company-box zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme sql-indent spaceline powerline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme rbenv rake rainbow-delimiters railscasts-theme racer pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy paradox spinner osx-trash osx-dictionary orgit organic-green-theme org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monochrome-theme molokai-theme moe-theme mmm-mode minitest minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint light-soap-theme less-css-mode launchctl js2-refactor multiple-cursors js2-mode js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gtags helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode github-theme github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md ggtags gandalf-theme fuzzy flyspell-correct-helm flyspell-correct flycheck-rust flycheck-pos-tip flycheck-gometalinter flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit ghub let-alist with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight espresso-theme eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat django-theme disaster diminish diff-hl darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-auctex company-anaconda company column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format chruby cherry-blossom-theme cargo markdown-mode rust-mode busybee-theme bundler inf-ruby bubbleberry-theme birds-of-paradise-plus-theme bind-map bind-key badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f dash s ample-zen-theme ample-theme all-the-icons-dired all-the-icons memoize alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup monokai-theme)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
-
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
-)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+ '(ccls-args nil)
+ '(ccls-initialization-options
+   (quote
+    (:cache
+     (:directory "/Users/KeigoOgawa/.emacs.d/.cache/lsp-ccls")
+     :clang
+     (:extraArgs
+      ("-isystem" "/Library/Developer/CommandLineTools/usr/include/c++/v1")))))
  '(package-selected-packages
    (quote
-    (zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vi-tilde-fringe vagrant-tramp uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme sql-indent spaceline powerline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme rbenv rake rainbow-delimiters railscasts-theme racer pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pbcopy paradox spinner osx-trash osx-dictionary orgit organic-green-theme org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monochrome-theme molokai-theme moe-theme mmm-mode minitest minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint light-soap-theme less-css-mode launchctl js2-refactor multiple-cursors js2-mode js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme indent-guide hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gtags helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio go-guru go-eldoc gnuplot gitignore-mode github-theme github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md ggtags gandalf-theme fuzzy flyspell-correct-helm flyspell-correct flycheck-rust flycheck-pos-tip flycheck-gometalinter flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit git-commit ghub let-alist with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight espresso-theme eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav dumb-jump drupal-mode php-mode dracula-theme dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat django-theme disaster diminish diff-hl darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-web web-completion-data company-tern dash-functional tern company-statistics company-quickhelp pos-tip company-go go-mode company-c-headers company-auctex company-anaconda company column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format chruby cherry-blossom-theme cargo markdown-mode rust-mode busybee-theme bundler inf-ruby bubbleberry-theme birds-of-paradise-plus-theme bind-map bind-key badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed auctex apropospriate-theme anti-zenburn-theme anaconda-mode pythonic f dash s ample-zen-theme ample-theme all-the-icons-dired all-the-icons memoize alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup monokai-theme))))
+    (company-box dash-functional all-the-icons-dired yasnippet-snippets helm-company helm-c-yasnippet fuzzy company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
+ )
+)
